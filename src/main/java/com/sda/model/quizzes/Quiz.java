@@ -1,42 +1,37 @@
 package com.sda.model.quizzes;
 
+import com.sda.model.users.Author;
+import com.sda.model.users.Participant;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@Entity @Data @NoArgsConstructor
+@Entity @Data
 public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int quizId;
+    private Long id;
 
-//    @NotBlank(message = "Please add a quiz title")
+    @NotBlank(message = "Please add a quiz title")
     private String quizTitle;
     @NotBlank(message = "Please add a quiz description")
     private String quizDescription;
 
-    @OneToMany(orphanRemoval = true)
-    @JoinColumn(name="quiz_id")
+    @OneToMany (cascade = CascadeType.ALL)
     private List<Question> questions;
 
-    // ********
-    // Initial relationship, commented out for now due to data saving issues
-    //    @OneToMany(targetEntity = Question.class, mappedBy = "quiz", fetch = FetchType.EAGER,
-//        cascade = CascadeType.ALL)
-    //    @ManyToOne()
-//    @JoinColumn(name = "author_id")
-//    private Author author;
-    //*******
+    @OneToMany (cascade = CascadeType.ALL)
+    private List<Participant> participantList;
 
-    private boolean privateStatus;
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Author author;
 
-    public Quiz(String quizTitle, String quizDescription, List<Question> questions, boolean privateStatus) {
-        this.quizTitle = quizTitle;
-        this.quizDescription = quizDescription;
-        this.questions = questions;
-        this.privateStatus = privateStatus;
-    }
+//    @Column(columnDefinition="tinyint(1) default 1")
+    private boolean isAvailable;
+
+    private boolean isPublic;
+
 }

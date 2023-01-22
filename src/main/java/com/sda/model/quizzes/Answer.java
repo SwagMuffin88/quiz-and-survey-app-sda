@@ -9,19 +9,12 @@ public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int answerId;
+    private Long id;
 
 //    @NotBlank(message = "Please write an answer")
     private String answerStatement;
 
-    public Answer(String answerStatement) {
-        this.answerStatement = answerStatement;
-    }
+//    @Column(columnDefinition="tinyint(1) default 1")
+    private boolean isAvailable;
 
-    // ************
-    // Initial relationship, commented out for now
-//    @ManyToOne()
-//    @JoinColumn(name = "question_id")
-//    private Question question;
-    // ************
 }

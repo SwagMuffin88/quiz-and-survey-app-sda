@@ -10,21 +10,18 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int questionId;
+    private Long id;
 
 //    @NotBlank(message = "Please write a question")
     private String questionStatement;
 
-    private String correctAnswer;
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Answer correctAnswer;
 
-    @OneToMany(orphanRemoval = true)
-    @JoinColumn(name="question_id")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answers;
 
+//    @Column(columnDefinition="tinyint(1) default 1")
+    private boolean isAvailable;
 
-    public Question(String questionStatement, String correctAnswer, List<Answer> answers) {
-        this.questionStatement = questionStatement;
-        this.answers = answers;
-        this.correctAnswer = correctAnswer;
-    }
 }

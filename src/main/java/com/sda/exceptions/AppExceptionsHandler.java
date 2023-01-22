@@ -26,7 +26,7 @@ public class AppExceptionsHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public Map<String,String> handleNotFoundEx (ResourceNotFoundException exception){
         Map<String, String> errorMsg = new HashMap<>();
-        errorMsg.put("No ressource", exception.getMessage());
+        errorMsg.put("Message", exception.getMessage());
         return  errorMsg;
     }
 }

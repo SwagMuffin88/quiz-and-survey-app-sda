@@ -4,48 +4,53 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.Filter;
 
 @Configuration @EnableWebSecurity @RequiredArgsConstructor
 public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
-    private JwtAuthenticationFilter jwtAuthFilter;
+    private final JwtAuthenticationFilter jwtAuthFilter;
 
-    // todo finish implementing security
-
-//    Initial config (no security):
+//    Initial config:
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception {
-        http.csrf()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf()
                 .disable()
                 .authorizeRequests()
-                .anyRequest()
+                .antMatchers("/auth/**", "/**", "/participant/**", "/login/**", "/quiz/**")
                 .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .httpBasic();
-        http.formLogin();
-        return http.build();
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/perform-logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .and()
+                .build();
     }
 
-    // With security filters:
+
+
+
+    // Spring Security 6 config:
 
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception {
-//        http
+//        return http
 //                .csrf()
 //                .disable()
 //                .authorizeHttpRequests()
-//                .requestMatchers()
+//                .requestMatchers(new RegexRequestMatcher("/auth/register", "POST"))
 //                .permitAll()
 //                .anyRequest()
 //                .authenticated()
@@ -54,9 +59,8 @@ public class SecurityConfig {
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //                .and()
 //                .authenticationProvider(authenticationProvider)
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.formLogin();
-//        return http.build();
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
 //    }
 
 }
